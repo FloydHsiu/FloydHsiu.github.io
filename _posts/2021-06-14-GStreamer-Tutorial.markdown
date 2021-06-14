@@ -1,12 +1,12 @@
 ---
 layout: post
-title:  "GStreamer Tutorial"
-date:   2021-06-14 00:14:05 +0800
-categories: GStreamer Tutorial 
+title:  "GStreamer Basic Tutorial Note"
+date:   2021-06-14 11:00:00 +0800
+categories: GStreamer Tutorial
 ---
 ## Basic-Tutorial 2
 
-![](https://i.imgur.com/3LylkXe.png)
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt2-figure-1.png' | relative_url}})
 
 1. `gst_pipeline_new(const gchar *name)`
     - 建立pipeline, bin
@@ -29,17 +29,18 @@ categories: GStreamer Tutorial
 
 ## Basic-Tutorial 3
 
-![](https://i.imgur.com/aiGCGpP.png)
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt3-src-element.png' | relative_url}})
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt3-filter-element.png' | relative_url}})
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt3-sink-element.png' | relative_url}})
 
-![](https://i.imgur.com/ED4Qdqy.png)
-
-![](https://i.imgur.com/gEbTFK8.png)
 Fig. GStreamer elements with their pads.
 
-![](https://i.imgur.com/nyO1IFA.png)
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt3-filter-element-multi.png' | relative_url}})
+
 Fig. A demuxer with two source pads.
 
-![](https://i.imgur.com/Mzaq12Y.png)
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt3-simple-player.png' | relative_url}})
+
 Fig. Example pipeline with two branches.
 
 1. pad為
@@ -116,7 +117,7 @@ sudo apt-get install build-essential libgtk-3-dev
 
 ### MultiThreading
 
-![](https://i.imgur.com/kXzTjG8.png)
+![]({{'assets/images/2021-06-14-GStreamer-Tutorial/bt7.png' | relative_url}})
 
 對於有多於一個sink pad的pipeline通常都需要multithread。因為，為了同步執行，通常一個sink在未準備完成前會被block，他們無法準備完成，因為只有一個thread進行運算，而它被第一個sink佔用了。
 
