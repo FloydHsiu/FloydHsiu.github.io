@@ -1,9 +1,15 @@
 ---
 layout: post
-title:  "GStreamer Basic Tutorial Note"
+title:  "GStreamer Basic Tutorial 筆記"
 date:   2021-06-14 11:00:00 +0800
 categories: GStreamer Tutorial
 ---
+## 前言
+
+本文章紀錄的內容較為散亂，主要為快速喚醒記憶用，閱讀時建議可以直接搭配**GStreamer**提供的
+[Basic Tutorial](https://gstreamer.freedesktop.org/documentation/tutorials/basic/index.html?gi-language=c)
+及程式碼一起閱讀。
+
 ## Basic-Tutorial 2
 
 ![Simple Pipeline]({{'assets/images/2021-06-14-GStreamer-Basic-Tutorial-Note/bt2-figure-1.png' | relative_url}})
@@ -92,19 +98,19 @@ sudo apt-get install build-essential libgtk-3-dev
 - pad是參考pad templates來建立，其中指出pad可以接受的資料格式。
 - 透過pad templates可以快速的進行初步的資料格式篩選，如果兩個即將相連的pad沒有可接受格式上的交集，那就不需要進行下一步的negotiation。
 - 下方為一個pad templates的範例
-    ```
-    SINK template: 'sink'
-    Availability: Always
-    Capabilities:
-    audio/x-raw
-               format: S16LE
-                 rate: [ 1, 2147483647 ]
-             channels: [ 1, 2 ]
-    audio/x-raw
-               format: U8
-                 rate: [ 1, 2147483647 ]
-             channels: [ 1, 2 ]
-    ```
+```
+SINK template: 'sink'
+Availability: Always
+Capabilities:
+audio/x-raw
+            format: S16LE
+                rate: [ 1, 2147483647 ]
+            channels: [ 1, 2 ]
+audio/x-raw
+            format: U8
+                rate: [ 1, 2147483647 ]
+            channels: [ 1, 2 ]
+```
 
 ### Element Factory
 - `gst_element_factory_make()`
@@ -131,6 +137,7 @@ sudo apt-get install build-essential libgtk-3-dev
 3. Request Pad
     - 在要求時才產生
     - EX:**Tee**為一個有sink pad但一開始沒有src pad的元件，其用於將輸入資訊複製成多個輸出。
+
 ```c
 GstElement *tee;
 tee = gst_element_factory_make("tee", "tee");
@@ -176,7 +183,7 @@ g_signal_emit_by_name (sink, "pull-sample", &sample);
         - `g_object_set (data.app_sink, "emit-signals", TRUE, NULL);`
 
 ## Basic-Tutorial 10
-link：https://gstreamer.freedesktop.org/documentation/tutorials/basic/gstreamer-tools.html?gi-language=c
+Link：[Basic Tutorial 10](https://gstreamer.freedesktop.org/documentation/tutorials/basic/gstreamer-tools.html?gi-language=c)
 
 - gst-launch-1.0
     - 在不用寫code的狀態下，快速設計gstreamer的pipeline
@@ -186,14 +193,12 @@ link：https://gstreamer.freedesktop.org/documentation/tutorials/basic/gstreamer
     - 用來分析來源資料的資訊
 
 ## Basic-Tutorial 11
-link:
-https://gstreamer.freedesktop.org/documentation/tutorials/basic/debugging-tools.html?gi-language=c#
+Link: [Basic Tutorial 11](https://gstreamer.freedesktop.org/documentation/tutorials/basic/debugging-tools.html?gi-language=c#)
 
 - 設定環境變數GST_DEBUG可以改變錯誤資訊顯示的層級
 - 設定環境變數GST_DEBUG_DUMP_DOT_DIR可以設定pipeline的圖形化結構輸出圖位置
 
 ## Basic-Tutorial 14
 
-link:
-https://gstreamer.freedesktop.org/documentation/tutorials/basic/handy-elements.html?gi-language=c
+Link: [Basic Tutorial 14](https://gstreamer.freedesktop.org/documentation/tutorials/basic/handy-elements.html?gi-language=c)
 - 一些常用的的元件介紹
