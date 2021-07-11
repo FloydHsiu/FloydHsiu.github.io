@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Dynamically Changing The Pipeline"
+title:  "動態改變Pipeline"
 date:   2021-07-11 21:00:00 +0800
 categories: GStreamer Tutorial
 ---
@@ -24,66 +24,8 @@ Reference:
 
 ## 改變pipeline中的元件
 
-```graphviz
-digraph graphname{
-    rankdir=LR;
-    node[shape=box style="rounded"]
-    
-    subgraph cluster_e1 {
-        label="element1";
-        style="rounded";
-        color=black;
-        subgraph cluster_e1_sink{
-            label="";
-            style="invis";
-            e1_sink_node [label=sink];
-        }
-        subgraph cluster_e1_src{
-            label="";
-            style="invis";
-            e1_src_node [label=src];
-        }
-        
-        e1_sink_node->e1_src_node [style="invis"];
-    }
-    e1_src_node->e2_sink_node;
-    subgraph cluster_e2 {
-        label="element2";
-        style="rounded";
-        color=black;
-        subgraph cluster_e2_sink{
-            label="";
-            style="invis";
-            e2_sink_node [label=sink];
-        }
-        subgraph cluster_e2_src{
-            label="";
-            style="invis";
-            e2_src_node [label=src];
-        }
-        
-        e2_sink_node->e2_src_node [style="invis"];
-    }
-    e2_src_node->e3_sink_node [labeldistance="10", labelangle="0"];
-    subgraph cluster_e3 {
-        label="element3";
-        style="rounded";
-        color=black;
-        subgraph cluster_e3_sink{
-            label="";
-            style="invis";
-            e3_sink_node [label=sink];
-        }
-        subgraph cluster_e3_src{
-            label="";
-            style="invis";
-            e3_src_node [label=src];
-        }
-        
-        e3_sink_node->e3_src_node [style="invis"];
-    }
-}
-```
+![Example Element Chain]({{'assets/images/2021-07-11-Dynamically-Changing-The-Pipeline/example-element-chain.svg' | relative_url}})
+
 上圖為一個由三個元件串起的鏈結
 假設，我們要將處於PLAYING狀態當中pipeline的`element2`替換成一個新的元件`element4`。
 就如上面注意事項提到的，我們不可以直接解除element1's source pad與element2's sink pad之間的連結，這會導致資料流出現錯誤。最合適的做法是，將來自element1 src pad的資料流暫時阻斷(block)，待我們將element2轉換成element2之後再恢復資料流的傳送。
@@ -111,21 +53,23 @@ Reference: [Changing elements in a pipeline](https://gstreamer.freedesktop.org/d
 0. 每一秒觸發一次影片特效元件切換的流程
     - `g_timeout_add_seconds (1, timeout_cb, loop)`
 1. 確保沒有資料流從element1到element2
-    ```c
-    static gboolean
-    timeout_cb (gpointer user_data)
-    {
-      /* 使用blocking pad probe暫時阻斷來自effect元件之前的資料流 */
-      gst_pad_add_probe (blockpad, GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
-          pad_probe_cb, user_data, NULL);
 
-      return TRUE;
-    }
-    ```
+```c
+static gboolean
+timeout_cb (gpointer user_data)
+{
+  /* 使用blocking pad probe暫時阻斷來自effect元件之前的資料流 */
+  gst_pad_add_probe (blockpad, GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
+      pad_probe_cb, user_data, NULL);
+
+  return TRUE;
+}
+```
     
 2. 確保element2當中的資料可以被element2處理完畢，並將資料流傳送離開element2
     - 在此有一點比較疑惑，在許多說明中都表示，呼叫`gst_pad_remove_probe`會使blocking pad unblock。但在此處，卻在剛剛進入pad_probe_cb就呼叫這個函式。
     - 我個人對此的解釋為，即便在一開始就呼叫此函式，程式執行步驟要將新的資料傳遞進來，也要等到該probe執行完畢。
+
 ```c
 static GstPadProbeReturn
 pad_probe_cb (GstPad * pad, GstPadProbeInfo * info, gpointer user_data)
@@ -156,6 +100,7 @@ pad_probe_cb (GstPad * pad, GstPadProbeInfo * info, gpointer user_data)
 3. element2 src pad持續接收不同的資料
     - 接收到EOS以外的event，忽略並往後傳遞
     - 接收到EOS，element2中的資料皆處理完畢，開始進行element的替換。
+
 ```c
 static GstPadProbeReturn
 event_probe_cb (GstPad * pad, GstPadProbeInfo * info, gpointer user_data)
